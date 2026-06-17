@@ -1,7 +1,7 @@
 # The SoftwareInterviewSupportSuite
-This is a folder for various projects in the software engineer support suite: a collection of projects that I am making to track my journey to getting into FAANG++.  I am targetting the original Acronym plus a few other big players in the data/engineering/fintech spaces. (Ramp, Plaid, Databricks, Palantir, Cloudflare and Microsoft for example)
+This is a folder for various projects in the software engineer support suite: a collection of projects that I am making to track my journey to getting into FAANG++. 
 
-The subprojects (dare I say microservices?) are intended to be run locally, as needed, with a data/json-api.
+They project is intended to be run locally and will expand as I see fit and useful.  For now it will remain in the command line with TUI features planned.
 
 # The Services:
 Leetcode Tracker - A tracker for all attempts on Leetcode interviews and problems.
