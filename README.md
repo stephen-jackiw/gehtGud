@@ -5,13 +5,13 @@ The project is intended to be run locally and will expand as I see fit and usefu
 
 # The Services:
 Leetcode Tracker - A tracker for all attempts on Leetcode interviews and problems.
-    - Stores your solutions
-    - Tracks attempts
-    - Tracks metadata on the question
-    - Tracks write ups and understandings of each attempt
-    - Provides Spaced repetition for problems so you dont forget them
-    - Tracks where you have seen (ie. which companies) certain problems and when
-    - Lets you create lists with subsections and track your progress towards completing that list
+- Stores your solutions
+- Tracks attempts
+- Tracks metadata on the question
+- Tracks write ups and understandings of each attempt
+- Provides Spaced repetition for problems so you dont forget them
+- Tracks where you have seen (ie. which companies) certain problems and when
+- Lets you create lists with subsections and track your progress towards completing that list
 
 Resume, Application and Interview Tracker - A datastore for all resume's you have sent, who they have been sent to, whether they got you an interview or not, how far in the interview cycle you went and any additional information like offers, notes, feedback and personal impressions
 
