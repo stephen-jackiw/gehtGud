@@ -1,0 +1,193 @@
+package main
+
+import (
+//	"./cmd"
+	"database/sql"
+	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/spf13/cobra"
+	"charm.land/huh/v2"
+  	"log"
+	"fmt"
+	"errors"
+	"strconv"
+	"time"
+)
+
+var (
+	id string
+	title string
+	link string
+	typeArray int
+	best_soution_time string
+	difficulty int
+)
+
+var (
+	attempt_id int
+	attempt_problemid string
+	attempt_attemptedDate time.Time
+	attempt_timeToCompleteInMinutes string
+	attempt_pathToWriteUp string
+	attempt_timeComplexity string
+	attempt_spaceComplexity string
+	attempt_passed bool
+	attempt_confidenceScore string
+	attempt_notes string
+)
+
+func main() {
+	//////////////////////////////////////////
+	//Insert new problem
+	form := huh.NewForm(
+		huh.NewGroup(
+			//Ask user to input the id (if it is on LC)
+			huh.NewInput().
+			Title("LC ID (optional)").
+			Value(&id).
+			Validate(func(str string) error {
+				_, err := strconv.Atoi(str)
+				if err != nil {
+					return errors.New("Failed to read ID as int")
+				}
+				return nil
+			}),
+
+			huh.NewInput().
+				Title("Link to problem").
+				Value(&link),
+				
+
+			huh.NewInput().
+				Title("Name of problem").
+				Value(&title),
+
+			huh.NewInput().
+				Title("Optimal Solution (in o notation)").
+				Value(&best_soution_time),
+
+			huh.NewSelect[int]().
+				Title("Difficulty").
+				Options(
+					huh.NewOption("Easy", 0),
+					huh.NewOption("Medium", 1),
+					huh.NewOption("Hard", 2),
+				).
+				Value(&difficulty),
+		),
+	)
+
+	err = form.Run()
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	//This should be part of the log --problem command
+	addLCProblem, err := database.Prepare("INSERT INTO lcproblems (id, title, link, difficulty) VALUES (?, ?, ?, ?)")
+
+	if err != nil{
+		log.Printf("%v", err)
+		log.Fatal("Failed to prepare LC Problem Insert statment")
+	}
+
+	addLCProblem.Exec(id, title, link, difficulty)
+
+	fmt.Printf("Leetcode Problem: %v is a %v difficulty", title, difficulty)
+
+	rows, err := database.Query("SELECT id, lcid, title, link, difficulty FROM lcproblems")
+	var id2 int
+	var lcid2 int
+	var title2 string
+	var link2 string
+	var difficulty2 int
+	for rows.Next() {
+		rows.Scan(&id2, &lcid2, &title2, &link2, &difficulty2)
+		fmt.Printf("%v: Leetcode #%v | %v | %v | %v", id2, lcid2, title2, link2, difficulty2)
+	}
+
+	//////////////////////////////////////////
+	//Insert new attempt
+	form = huh.NewForm(
+		huh.NewGroup(
+			//Ask user to input the id (if it is on LC)
+			huh.NewInput().
+			Title("Leetcode ID of the Problem (optional)").
+			Value(&attempt_problemid).
+			Validate(func(str string) error {
+				_, err := strconv.Atoi(str)
+				if err != nil {
+					return errors.New("Failed to read ID as int")
+				}
+				return nil
+			}),
+
+			huh.NewInput().
+				Title("How long did it take to solve (in Minutes)").
+				Value(&attempt_timeToCompleteInMinutes).
+				Validate(func(str string) error {
+					_, err := strconv.Atoi(str)
+					if err != nil {
+						return errors.New("Failed to read ID as int")
+					}
+					return nil
+				}),
+
+			huh.NewInput().
+			Title("Did you create a write up?  If so, share the path.").
+				Value(&attempt_pathToWriteUp),
+
+			huh.NewInput().
+				Title("Time complexity (in O notation)").
+				Value(&attempt_timeComplexity),
+
+			huh.NewInput().
+				Title("Space complexity (in O notation)").
+				Value(&attempt_spaceComplexity),
+
+			huh.NewSelect[bool]().
+				Title("Passed? (Got the correct solution without running the code)").
+				Options(
+					huh.NewOption("Yes", true),
+					huh.NewOption("No", false),
+				).
+				Value(&attempt_passed),
+
+			huh.NewInput().
+				Title("Confidence Score 0-5 (5 was easy. 0 was hard)").
+				Value(&attempt_confidenceScore).
+				Validate(func(str string) error {
+					num, err := strconv.Atoi(str)
+					if err != nil {
+						return errors.New("Failed to read ID as int")
+					}
+					if num < 0 || num > 5{
+						return errors.New("Confidence score is not in given range")
+					}
+					return nil
+				}),
+
+			huh.NewText().
+				Title("Notes?").
+				Value(&attempt_notes),
+		),
+	)
+
+	err = form.Run()
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	attempt_attemptedDate = time.Now()
+
+	//This should be part of the log --problem command
+	addLCAttempt, err := database.Prepare("INSERT INTO lcattempts (problemid, attemptedDate, passed, confidenceScore) VALUES (?, ?, ?, ?)")
+
+	if err != nil{
+		log.Printf("%v", err)
+		log.Fatal("Failed to prepare LC Attempt Insert statment")
+	}
+
+	addLCAttempt.Exec(attempt_problemid, attempt_attemptedDate, attempt_passed, attempt_confidenceScore)
+
+	fmt.Printf("Leetcode Problem: %v is a %v difficulty", title, difficulty)
+
+}
